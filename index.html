@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Red & Black Casino</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    user-select: none;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: Arial, sans-serif;
+    background: radial-gradient(circle, #174525, #061009 70%);
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow-x: hidden;
+}
+
+.casino {
+    width: 95%;
+    max-width: 700px;
+    padding: 25px;
+    text-align: center;
+    border: 2px solid #d6b45a;
+    border-radius: 25px;
+    background: rgba(8, 20, 12, .96);
+    box-shadow: 0 0 35px #000;
+}
+
+h1 {
+    color: #f5d77a;
+    margin: 5px;
+    text-shadow: 0 0 15px #d6a936;
+}
+
+.subtitle {
+    color: #aaa;
+    margin-bottom: 15px;
+}
+
+.balance {
+    background: #111;
+    padding: 12px;
+    border-radius: 15px;
+    margin-bottom: 15px;
+}
+
+#balance {
+    color: #ffd75e;
+    font-weight: bold;
+}
+
+/* КОЛЕСО */
+
+.wheel-box {
+    position: relative;
+    width: 310px;
+    height: 310px;
+    margin: 15px auto 25px;
+}
+
+.wheel {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 10px solid #d5b35b;
+    position: relative;
+    overflow: hidden;
+
+    background: conic-gradient(
+        #138a45 0deg 10deg,
+        #151515 10deg 20deg,
+        #c9273e 20deg 30deg,
+        #151515 30deg 40deg,
+        #c9273e 40deg 50deg,
+        #151515 50deg 60deg,
+        #c9273e 60deg 70deg,
+        #151515 70deg 80deg,
+        #c9273e 80deg 90deg,
+        #151515 90deg 100deg,
+        #c9273e 100deg 110deg,
+        #151515 110deg 120deg,
+        #c9273e 120deg 130deg,
+        #151515 130deg 140deg,
+        #c9273e 140deg 150deg,
+        #151515 150deg 160deg,
+        #c9273e 160deg 170deg,
+        #151515 170deg 180deg,
+        #c9273e 180deg 190deg,
+        #151515 190deg 200deg,
+        #c9273e 200deg 210deg,
+        #151515 210deg 220deg,
+        #c9273e 220deg 230deg,
+        #151515 230deg 240deg,
+        #c9273e 240deg 250deg,
+        #151515 250deg 260deg,
+        #c9273e 260deg 270deg,
+        #151515 270deg 280deg,
+        #c9273e 280deg 290deg,
+        #151515 290deg 300deg,
+        #c9273e 300deg 310deg,
+        #151515 310deg 320deg,
+        #c9273e 320deg 330deg,
+        #151515 330deg 340deg,
+        #c9273e 340deg 350deg,
+        #151515 350deg 360deg
+    );
+
+    transition: transform 4s cubic-bezier(.12,.72,.15,1);
+    box-shadow:
+        0 0 20px #000,
+        inset 0 0 20px #000;
+}
+
+.wheel::after {
+    content: "";
+    position: absolute;
+    width: 75px;
+    height: 75px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #f0d16a, #765719);
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    border: 5px solid #eee;
+    box-shadow: 0 0 15px #000;
+}
+
+/* Цифры */
+
+.numbers {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+.number {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 30px;
+    height: 30px;
+    margin: -15px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: bold;
+    transform-origin: 15px 140px;
+}
+
+/* Указатель */
+
+.pointer {
+    position: absolute;
+    z-index: 5;
+    top: -13px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 16px solid transparent;
+    border-right: 16px solid transparent;
+    border-top: 35px solid #f5d77a;
+    filter: drop-shadow(0 3px 3px #000);
+}
+
+/* Ставка */
+
+.bet-box {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 15px;
+}
+
+.bet-btn {
+    background: #252525;
+    color: white;
+    border: 1px solid #777;
+    border-radius: 10px;
+    padding: 9px 15px;
+    cursor: pointer;
+}
+
+.bet-btn.active {
+    background: #d2a83f;
+    color: #111;
+}
+
+/* Выбор цвета */
+
+.table {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin: 15px 0;
+}
+
+.choice {
+    width: 45%;
+    max-width: 230px;
+    height: 100px;
+    border-radius: 18px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    cursor: pointer;
+    transition: .2s;
+    border: 3px solid rgba(255,255,255,.2);
+}
+
+.choice:hover {
+    transform: translateY(-5px) scale(1.03);
+}
+
+.red {
+    background: linear-gradient(145deg, #d9273f, #720d1b);
+}
+
+.black {
+    background: linear-gradient(145deg, #333, #050505);
+}
+
+.choice-icon {
+    font-size: 32px;
+}
+
+.choice-name {
+    font-weight: bold;
+}
+
+/* Кнопка */
+
+.play {
+    width: 80%;
+    padding: 15px;
+    border: none;
+    border-radius: 15px;
+    background: linear-gradient(135deg, #f1cc55, #b88619);
+    color: #17120a;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.play:hover {
+    transform: translateY(-3px);
+    filter: brightness(1.1);
+}
+
+.play:active {
+    transform: scale(.96);
+}
+
+.result {
+    min-height: 30px;
+    font-size: 20px;
+    font-weight: bold;
+    margin: 12px;
+}
+
+.reset {
+    margin-top: 12px;
+    background: transparent;
+    border: 1px solid #777;
+    color: #aaa;
+    padding: 8px 15px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.history {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 15px;
+}
+
+.history span {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.history-red {
+    background: #d9273f;
+}
+
+.history-black {
+    background: #222;
+    border: 1px solid #777;
+}
+
+.history-green {
+    background: #138a45;
+}
+
+@media(max-width:500px) {
+    .wheel-box {
+        width: 270px;
+        height: 270px;
+    }
+
+    .number {
+        transform-origin: 15px 120px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="casino">
+
+<h1>♠ RED & BLACK ♥</h1>
+<div class="subtitle">Виртуальная рулетка</div>
+
+<div class="balance">
+    💰 Баланс:
+    <span id="balance">1000</span>
+    фишек
+</div>
+
+<!-- КОЛЕСО -->
+
+<div class="wheel-box">
+
+    <div class="pointer"></div>
+
+    <div class="wheel" id="wheel">
+
+        <div class="numbers" id="numbers"></div>
+
+    </div>
+
+</div>
+
+<div class="bet-box">
+
+<button class="bet-btn active" onclick="setBet(10,this)">10</button>
+<button class="bet-btn" onclick="setBet(25,this)">25</button>
+<button class="bet-btn" onclick="setBet(50,this)">50</button>
+<button class="bet-btn" onclick="setBet(100,this)">100</button>
+<button class="bet-btn" onclick="setBet(250,this)">250</button>
+
+</div>
+
+<div class="table">
+
+<div class="choice red" onclick="choose('red')">
+    <div class="choice-icon">♥</div>
+    <div class="choice-name">КРАСНОЕ</div>
+</div>
+
+<div class="choice black" onclick="choose('black')">
+    <div class="choice-icon">♠</div>
+    <div class="choice-name">ЧЁРНОЕ</div>
+</div>
+
+</div>
+
+<div class="result" id="result">
+    Выбери цвет
+</div>
+
+<button class="play" onclick="play()">
+    🎰 КРУТИТЬ КОЛЕСО
+</button>
+
+<br>
+
+<button class="reset" onclick="resetGame()">
+    Сбросить баланс
+</button>
+
+<div class="history" id="history"></div>
+
+</div>
+
+<script>
+
+let balance = 1000;
+let bet = 10;
+let selected = null;
+let playing = false;
+let rotation = 0;
+
+const balanceEl = document.getElementById("balance");
+const resultEl = document.getElementById("result");
+const historyEl = document.getElementById("history");
+const wheel = document.getElementById("wheel");
+const numbers = document.getElementById("numbers");
+
+/* Красные числа рулетки */
+
+const redNumbers = [
+    1,3,5,7,9,12,14,16,18,
+    19,21,23,25,27,30,32,34,36
+];
+
+/* Создаём цифры */
+
+for(let i = 0; i <= 36; i++){
+
+    const number = document.createElement("div");
+
+    number.className = "number";
+    number.textContent = i;
+
+    const angle = i * (360 / 37);
+
+    number.style.transform =
+        `rotate(${angle}deg) translateY(-125px) rotate(-${angle}deg)`;
+
+    number.style.color =
+        i === 0
+        ? "#55ff9a"
+        : redNumbers.includes(i)
+        ? "#fff"
+        : "#fff";
+
+    numbers.appendChild(number);
+}
+
+function updateBalance(){
+    balanceEl.textContent = balance;
+}
+
+function setBet(value, button){
+
+    if(playing) return;
+
+    bet = value;
+
+    document.querySelectorAll(".bet-btn")
+        .forEach(btn => btn.classList.remove("active"));
+
+    button.classList.add("active");
+}
+
+function choose(color){
+
+    if(playing) return;
+
+    selected = color;
+
+    resultEl.textContent =
+        color === "red"
+        ? "🔴 Выбрано КРАСНОЕ"
+        : "⚫ Выбрано ЧЁРНОЕ";
+}
+
+function getColor(number){
+
+    if(number === 0)
+        return "green";
+
+    return redNumbers.includes(number)
+        ? "red"
+        : "black";
+}
+
+function play(){
+
+    if(playing) return;
+
+    if(!selected){
+        resultEl.textContent =
+            "⚠️ Сначала выбери красное или чёрное!";
+        return;
+    }
+
+    if(balance < bet){
+        resultEl.textContent =
+            "❌ Недостаточно фишек!";
+        return;
+    }
+
+    playing = true;
+
+    balance -= bet;
+    updateBalance();
+
+    resultEl.textContent = "🎰 Колесо вращается...";
+
+    /* Случайное число */
+
+    const resultNumber =
+        Math.floor(Math.random() * 37);
+
+    const resultColor =
+        getColor(resultNumber);
+
+    /*
+        Колесо делает несколько полных оборотов,
+        после чего останавливается.
+    */
+
+    const extraSpins =
+        5 + Math.floor(Math.random() * 4);
+
+    const targetAngle =
+        (360 - resultNumber * (360 / 37));
+
+    rotation +=
+        extraSpins * 360 + targetAngle;
+
+    wheel.style.transform =
+        `rotate(${rotation}deg)`;
+
+    setTimeout(() => {
+
+        addHistory(resultNumber, resultColor);
+
+        if(resultColor === selected){
+
+            const winnings = bet * 2;
+
+            balance += winnings;
+
+            resultEl.textContent =
+                `🎉 ПОБЕДА! Выпало ${resultNumber}. +${winnings} фишек`;
+
+        } else {
+
+            let colorName =
+                resultColor === "red"
+                ? "КРАСНОЕ 🔴"
+                : resultColor === "black"
+                ? "ЧЁРНОЕ ⚫"
+                : "ЗЕЛЁНОЕ 🟢";
+
+            resultEl.textContent =
+                `💥 Выпало ${resultNumber} -- ${colorName}`;
+        }
+
+        updateBalance();
+
+        selected = null;
+        playing = false;
+
+    }, 4200);
+}
+
+function addHistory(number, color){
+
+    const circle =
+        document.createElement("span");
+
+    circle.textContent = number;
+
+    if(color === "red")
+        circle.className = "history-red";
+
+    else if(color === "black")
+        circle.className = "history-black";
+
+    else
+        circle.className = "history-green";
+
+    historyEl.prepend(circle);
+
+    if(historyEl.children.length > 12){
+        historyEl.removeChild(
+            historyEl.lastChild
+        );
+    }
+}
+
+function resetGame(){
+
+    balance = 1000;
+    selected = null;
+    playing = false;
+    rotation = 0;
+
+    wheel.style.transform =
+        "rotate(0deg)";
+
+    resultEl.textContent =
+        "Выбери цвет";
+
+    historyEl.innerHTML = "";
+
+    updateBalance();
+}
+
+updateBalance();
+
+</script>
+
+</body>
+</html>
