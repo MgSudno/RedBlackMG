@@ -3,12 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Red & Black Casino</title>
+
+<title>Red & Black</title>
 
 <style>
 * {
     box-sizing: border-box;
     user-select: none;
+    -webkit-tap-highlight-color: transparent;
 }
 
 body {
@@ -20,17 +22,165 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    overflow-x: hidden;
+    overflow: hidden;
 }
+
+/* УБИРАЕМ СИНЮЮ РАМКУ */
+
+button,
+.choice {
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+button:focus,
+button:active,
+.choice:focus,
+.choice:active {
+    outline: none;
+}
+
+/* ЭКРАНЫ */
+
+.screen {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: .4s;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* АНИМАЦИИ */
+
+.fade-in {
+    animation: fadeIn .45s ease forwards;
+}
+
+.fade-out {
+    animation: fadeOut .4s ease forwards;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    to {
+        opacity: 0;
+        transform: scale(.9);
+    }
+}
+
+/* МЕНЮ */
+
+.menu {
+    width: 90%;
+    max-width: 500px;
+    padding: 35px;
+    text-align: center;
+    border: 2px solid #d6b45a;
+    border-radius: 25px;
+    background: rgba(8,20,12,.96);
+    box-shadow: 0 0 35px #000;
+}
+
+.menu h1 {
+    color: #f5d77a;
+    font-size: 38px;
+    margin: 5px;
+    text-shadow: 0 0 15px #d6a936;
+}
+
+.menu-subtitle {
+    color: #aaa;
+    margin: 10px 0 30px;
+}
+
+.menu-button {
+    width: 90%;
+    padding: 15px;
+    margin: 7px;
+    border: none;
+    border-radius: 13px;
+    background: linear-gradient(135deg,#f1cc55,#b88619);
+    color: #17120a;
+    font-size: 19px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.menu-button:hover {
+    transform: scale(1.04);
+    filter: brightness(1.1);
+}
+
+.menu-button:active {
+    transform: scale(.96);
+}
+
+/* ОКНА */
+
+.popup {
+    width: 90%;
+    max-width: 500px;
+    padding: 30px;
+    text-align: center;
+    border: 2px solid #d6b45a;
+    border-radius: 25px;
+    background: rgba(8,20,12,.97);
+    box-shadow: 0 0 35px #000;
+}
+
+.popup h2 {
+    color: #f5d77a;
+}
+
+.popup p {
+    color: #ddd;
+    line-height: 1.6;
+}
+
+.close-button {
+    margin-top: 15px;
+    padding: 11px 25px;
+    border: none;
+    border-radius: 10px;
+    background: #333;
+    color: white;
+    cursor: pointer;
+}
+
+/* ИГРА */
 
 .casino {
     width: 95%;
     max-width: 700px;
+    max-height: 96vh;
+    overflow-y: auto;
     padding: 25px;
     text-align: center;
     border: 2px solid #d6b45a;
     border-radius: 25px;
-    background: rgba(8, 20, 12, .96);
+    background: rgba(8,20,12,.96);
     box-shadow: 0 0 35px #000;
 }
 
@@ -114,6 +264,7 @@ h1 {
     );
 
     transition: transform 4s cubic-bezier(.12,.72,.15,1);
+
     box-shadow:
         0 0 20px #000,
         inset 0 0 20px #000;
@@ -125,15 +276,13 @@ h1 {
     width: 75px;
     height: 75px;
     border-radius: 50%;
-    background: radial-gradient(circle, #f0d16a, #765719);
+    background: radial-gradient(circle,#f0d16a,#765719);
     left: 50%;
     top: 50%;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%,-50%);
     border: 5px solid #eee;
     box-shadow: 0 0 15px #000;
 }
-
-/* Цифры */
 
 .numbers {
     position: absolute;
@@ -154,8 +303,6 @@ h1 {
     transform-origin: 15px 140px;
 }
 
-/* Указатель */
-
 .pointer {
     position: absolute;
     z-index: 5;
@@ -170,31 +317,7 @@ h1 {
     filter: drop-shadow(0 3px 3px #000);
 }
 
-/* Ставка */
-
-.bet-box {
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin-bottom: 15px;
-}
-
-.bet-btn {
-    background: #252525;
-    color: white;
-    border: 1px solid #777;
-    border-radius: 10px;
-    padding: 9px 15px;
-    cursor: pointer;
-}
-
-.bet-btn.active {
-    background: #d2a83f;
-    color: #111;
-}
-
-/* Выбор цвета */
+/* ВЫБОР ЦВЕТА */
 
 .table {
     display: flex;
@@ -221,12 +344,16 @@ h1 {
     transform: translateY(-5px) scale(1.03);
 }
 
+.choice:active {
+    transform: scale(.97);
+}
+
 .red {
-    background: linear-gradient(145deg, #d9273f, #720d1b);
+    background: linear-gradient(145deg,#d9273f,#720d1b);
 }
 
 .black {
-    background: linear-gradient(145deg, #333, #050505);
+    background: linear-gradient(145deg,#333,#050505);
 }
 
 .choice-icon {
@@ -237,14 +364,14 @@ h1 {
     font-weight: bold;
 }
 
-/* Кнопка */
+/* КНОПКА ИГРЫ */
 
 .play {
     width: 80%;
     padding: 15px;
     border: none;
     border-radius: 15px;
-    background: linear-gradient(135deg, #f1cc55, #b88619);
+    background: linear-gradient(135deg,#f1cc55,#b88619);
     color: #17120a;
     font-size: 20px;
     font-weight: bold;
@@ -268,15 +395,7 @@ h1 {
     margin: 12px;
 }
 
-.reset {
-    margin-top: 12px;
-    background: transparent;
-    border: 1px solid #777;
-    color: #aaa;
-    padding: 8px 15px;
-    border-radius: 10px;
-    cursor: pointer;
-}
+/* ИСТОРИЯ */
 
 .history {
     display: flex;
@@ -310,7 +429,32 @@ h1 {
     background: #138a45;
 }
 
+/* В МЕНЮ */
+
+.back-menu {
+    margin-top: 15px;
+    padding: 10px 20px;
+    border-radius: 10px;
+    border: 1px solid #777;
+    background: transparent;
+    color: #aaa;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.back-menu:hover {
+    color: white;
+    border-color: #aaa;
+}
+
+.back-menu:active {
+    transform: scale(.95);
+}
+
+/* МОБИЛЬНАЯ ВЕРСИЯ */
+
 @media(max-width:500px) {
+
     .wheel-box {
         width: 270px;
         height: 270px;
@@ -319,151 +463,411 @@ h1 {
     .number {
         transform-origin: 15px 120px;
     }
+
+    .casino {
+        padding: 15px;
+    }
+
+    .menu {
+        padding: 25px;
+    }
+
 }
 </style>
 </head>
 
 <body>
 
-<div class="casino">
+<!-- ================= МЕНЮ ================= -->
 
-<h1>♠ RED & BLACK ♥</h1>
-<div class="subtitle">Виртуальная рулетка</div>
+<div class="screen fade-in" id="menuScreen">
 
-<div class="balance">
-    💰 Баланс:
-    <span id="balance">1000</span>
-    фишек
-</div>
+    <div class="menu">
 
-<!-- КОЛЕСО -->
+        <h1>♠ RED & BLACK ♥</h1>
 
-<div class="wheel-box">
+        <div class="menu-subtitle">
+            Виртуальная рулетка
+        </div>
 
-    <div class="pointer"></div>
+        <button class="menu-button" onclick="startGame()">
+            🎮 ИГРАТЬ
+        </button>
 
-    <div class="wheel" id="wheel">
+        <button class="menu-button" onclick="showRules()">
+            📖 ПРАВИЛА
+        </button>
 
-        <div class="numbers" id="numbers"></div>
+        <button class="menu-button" onclick="showAbout()">
+            ℹ️ О НАС
+        </button>
+
+        <button class="menu-button" onclick="exitGame()">
+            🚪 ВЫХОД
+        </button>
 
     </div>
 
 </div>
 
-<div class="bet-box">
 
-<button class="bet-btn active" onclick="setBet(10,this)">10</button>
-<button class="bet-btn" onclick="setBet(25,this)">25</button>
-<button class="bet-btn" onclick="setBet(50,this)">50</button>
-<button class="bet-btn" onclick="setBet(100,this)">100</button>
-<button class="bet-btn" onclick="setBet(250,this)">250</button>
+<!-- ================= ПРАВИЛА ================= -->
+
+<div class="screen hidden" id="rulesScreen">
+
+    <div class="popup">
+
+        <h2>📖 Правила</h2>
+
+        <p>
+            Выбери красное или чёрное,
+            затем нажми кнопку вращения.
+        </p>
+
+        <p>
+            Колесо остановится на случайном числе.
+            За правильный выбор начисляются
+            виртуальные очки.
+        </p>
+
+        <button class="close-button" onclick="backToMenu()">
+            ← В меню
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- ================= О НАС ================= -->
+
+<div class="screen hidden" id="aboutScreen">
+
+    <div class="popup">
+
+        <h2>ℹ️ О нас</h2>
+
+        <p>
+            RED & BLACK -- небольшая браузерная
+            игра с виртуальными очками.
+        </p>
+
+        <p>
+            Игра создана на HTML, CSS и JavaScript.
+        </p>
+
+        <button class="close-button" onclick="backToMenu()">
+            ← В меню
+        </button>
+
+    </div>
 
 </div>
 
-<div class="table">
 
-<div class="choice red" onclick="choose('red')">
-    <div class="choice-icon">♥</div>
-    <div class="choice-name">КРАСНОЕ</div>
+<!-- ================= ИГРА ================= -->
+
+<div class="screen hidden" id="gameScreen">
+
+<div class="casino">
+
+    <h1>♠ RED & BLACK ♥</h1>
+
+    <div class="subtitle">
+        Виртуальная рулетка
+    </div>
+
+    <div class="balance">
+        ⭐ Очки:
+        <span id="balance">1000</span>
+    </div>
+
+
+    <!-- КОЛЕСО -->
+
+    <div class="wheel-box">
+
+        <div class="pointer"></div>
+
+        <div class="wheel" id="wheel">
+
+            <div class="numbers" id="numbers"></div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ВЫБОР -->
+
+    <div class="table">
+
+        <div class="choice red" onclick="choose('red')">
+
+            <div class="choice-icon">
+                ♥
+            </div>
+
+            <div class="choice-name">
+                КРАСНОЕ
+            </div>
+
+        </div>
+
+
+        <div class="choice black" onclick="choose('black')">
+
+            <div class="choice-icon">
+                ♠
+            </div>
+
+            <div class="choice-name">
+                ЧЁРНОЕ
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="result" id="result">
+        Выбери цвет
+    </div>
+
+
+    <button class="play" onclick="play()">
+        🎰 КРУТИТЬ КОЛЕСО
+    </button>
+
+
+    <div class="history" id="history"></div>
+
+
+    <button class="back-menu" onclick="backToMenu()">
+        ← В меню
+    </button>
+
 </div>
 
-<div class="choice black" onclick="choose('black')">
-    <div class="choice-icon">♠</div>
-    <div class="choice-name">ЧЁРНОЕ</div>
 </div>
 
-</div>
-
-<div class="result" id="result">
-    Выбери цвет
-</div>
-
-<button class="play" onclick="play()">
-    🎰 КРУТИТЬ КОЛЕСО
-</button>
-
-<br>
-
-<button class="reset" onclick="resetGame()">
-    Сбросить баланс
-</button>
-
-<div class="history" id="history"></div>
-
-</div>
 
 <script>
 
+/* ================= ПЕРЕМЕННЫЕ ================= */
+
 let balance = 1000;
-let bet = 10;
 let selected = null;
 let playing = false;
 let rotation = 0;
 
-const balanceEl = document.getElementById("balance");
-const resultEl = document.getElementById("result");
-const historyEl = document.getElementById("history");
-const wheel = document.getElementById("wheel");
-const numbers = document.getElementById("numbers");
+const balanceEl =
+    document.getElementById("balance");
 
-/* Красные числа рулетки */
+const resultEl =
+    document.getElementById("result");
+
+const historyEl =
+    document.getElementById("history");
+
+const wheel =
+    document.getElementById("wheel");
+
+const numbers =
+    document.getElementById("numbers");
+
 
 const redNumbers = [
     1,3,5,7,9,12,14,16,18,
     19,21,23,25,27,30,32,34,36
 ];
 
-/* Создаём цифры */
+
+/* ================= ЦИФРЫ КОЛЕСА ================= */
 
 for(let i = 0; i <= 36; i++){
 
-    const number = document.createElement("div");
+    const number =
+        document.createElement("div");
 
     number.className = "number";
+
     number.textContent = i;
 
-    const angle = i * (360 / 37);
+    const angle =
+        i * (360 / 37);
 
     number.style.transform =
-        `rotate(${angle}deg) translateY(-125px) rotate(-${angle}deg)`;
-
-    number.style.color =
-        i === 0
-        ? "#55ff9a"
-        : redNumbers.includes(i)
-        ? "#fff"
-        : "#fff";
+        `rotate(${angle}deg)
+         translateY(-125px)
+         rotate(-${angle}deg)`;
 
     numbers.appendChild(number);
 }
 
+
+/* ================= МЕНЮ ================= */
+
+function startGame(){
+
+    switchScreen(
+        "menuScreen",
+        "gameScreen"
+    );
+
+}
+
+
+function showRules(){
+
+    switchScreen(
+        "menuScreen",
+        "rulesScreen"
+    );
+
+}
+
+
+function showAbout(){
+
+    switchScreen(
+        "menuScreen",
+        "aboutScreen"
+    );
+
+}
+
+
+function backToMenu(){
+
+    const current =
+        document.querySelector(
+            ".screen:not(.hidden)"
+        );
+
+    if(current){
+
+        switchScreen(
+            current.id,
+            "menuScreen"
+        );
+
+    }
+
+}
+
+
+/* ================= ПЕРЕКЛЮЧЕНИЕ ================= */
+
+function switchScreen(from,to){
+
+    const oldScreen =
+        document.getElementById(from);
+
+    const newScreen =
+        document.getElementById(to);
+
+    oldScreen.classList.remove("fade-in");
+
+    oldScreen.classList.add("fade-out");
+
+
+    setTimeout(() => {
+
+        oldScreen.classList.add("hidden");
+
+        oldScreen.classList.remove("fade-out");
+
+        newScreen.classList.remove("hidden");
+
+        void newScreen.offsetWidth;
+
+        newScreen.classList.add("fade-in");
+
+    },400);
+
+}
+
+
+/* ================= ВЫХОД ================= */
+
+function exitGame(){
+
+    document.body.innerHTML = `
+
+        <div style="
+            color:#f5d77a;
+            font-family:Arial;
+            text-align:center;
+            width:100%;
+            animation:fadeIn .5s ease;
+        ">
+
+            <h1>RED & BLACK</h1>
+
+            <p style="color:#aaa;">
+                Спасибо за игру!
+            </p>
+
+            <button
+                onclick="location.reload()"
+                style="
+                    padding:12px 25px;
+                    border:0;
+                    border-radius:10px;
+                    background:#d6b45a;
+                    color:#17120a;
+                    font-weight:bold;
+                    cursor:pointer;
+                    outline:none;
+                    -webkit-tap-highlight-color:transparent;
+                "
+            >
+                Вернуться
+            </button>
+
+        </div>
+
+    `;
+
+}
+
+
+/* ================= БАЛАНС ================= */
+
 function updateBalance(){
-    balanceEl.textContent = balance;
+
+    balanceEl.textContent =
+        balance;
+
 }
 
-function setBet(value, button){
 
-    if(playing) return;
-
-    bet = value;
-
-    document.querySelectorAll(".bet-btn")
-        .forEach(btn => btn.classList.remove("active"));
-
-    button.classList.add("active");
-}
+/* ================= ВЫБОР ЦВЕТА ================= */
 
 function choose(color){
 
-    if(playing) return;
+    if(playing)
+        return;
 
     selected = color;
 
-    resultEl.textContent =
-        color === "red"
-        ? "🔴 Выбрано КРАСНОЕ"
-        : "⚫ Выбрано ЧЁРНОЕ";
+    if(color === "red"){
+
+        resultEl.textContent =
+            "🔴 Выбрано КРАСНОЕ";
+
+    }else{
+
+        resultEl.textContent =
+            "⚫ Выбрано ЧЁРНОЕ";
+
+    }
+
 }
+
+
+/* ================= ОПРЕДЕЛЕНИЕ ЦВЕТА ================= */
 
 function getColor(number){
 
@@ -473,136 +877,143 @@ function getColor(number){
     return redNumbers.includes(number)
         ? "red"
         : "black";
+
 }
+
+
+/* ================= ВРАЩЕНИЕ ================= */
 
 function play(){
 
-    if(playing) return;
+    if(playing)
+        return;
 
     if(!selected){
-        resultEl.textContent =
-            "⚠️ Сначала выбери красное или чёрное!";
-        return;
-    }
 
-    if(balance < bet){
         resultEl.textContent =
-            "❌ Недостаточно фишек!";
+            "⚠️ Сначала выбери цвет!";
+
         return;
+
     }
 
     playing = true;
 
-    balance -= bet;
-    updateBalance();
+    resultEl.textContent =
+        "🎰 Колесо вращается...";
 
-    resultEl.textContent = "🎰 Колесо вращается...";
-
-    /* Случайное число */
 
     const resultNumber =
         Math.floor(Math.random() * 37);
 
+
     const resultColor =
         getColor(resultNumber);
 
-    /*
-        Колесо делает несколько полных оборотов,
-        после чего останавливается.
-    */
 
     const extraSpins =
-        5 + Math.floor(Math.random() * 4);
+        5 + Math.floor(
+            Math.random() * 4
+        );
+
 
     const targetAngle =
-        (360 - resultNumber * (360 / 37));
+        360 -
+        resultNumber *
+        (360 / 37);
+
 
     rotation +=
-        extraSpins * 360 + targetAngle;
+        extraSpins * 360 +
+        targetAngle;
+
 
     wheel.style.transform =
         `rotate(${rotation}deg)`;
 
+
     setTimeout(() => {
 
-        addHistory(resultNumber, resultColor);
+        addHistory(
+            resultNumber,
+            resultColor
+        );
+
 
         if(resultColor === selected){
 
-            const winnings = bet * 2;
-
-            balance += winnings;
+            balance += 100;
 
             resultEl.textContent =
-                `🎉 ПОБЕДА! Выпало ${resultNumber}. +${winnings} фишек`;
+                `🎉 Правильно! Выпало ${resultNumber}. +100 очков`;
 
-        } else {
-
-            let colorName =
-                resultColor === "red"
-                ? "КРАСНОЕ 🔴"
-                : resultColor === "black"
-                ? "ЧЁРНОЕ ⚫"
-                : "ЗЕЛЁНОЕ 🟢";
+        }else{
 
             resultEl.textContent =
-                `💥 Выпало ${resultNumber} -- ${colorName}`;
+                `💥 Выпало ${resultNumber}. Попробуй ещё раз!`;
+
         }
+
 
         updateBalance();
 
         selected = null;
+
         playing = false;
 
-    }, 4200);
+    },4200);
+
 }
 
-function addHistory(number, color){
+
+/* ================= ИСТОРИЯ ================= */
+
+function addHistory(number,color){
 
     const circle =
         document.createElement("span");
 
-    circle.textContent = number;
+    circle.textContent =
+        number;
 
-    if(color === "red")
-        circle.className = "history-red";
 
-    else if(color === "black")
-        circle.className = "history-black";
+    if(color === "red"){
 
-    else
-        circle.className = "history-green";
+        circle.className =
+            "history-red";
+
+    }else if(color === "black"){
+
+        circle.className =
+            "history-black";
+
+    }else{
+
+        circle.className =
+            "history-green";
+
+    }
+
 
     historyEl.prepend(circle);
 
+
     if(historyEl.children.length > 12){
+
         historyEl.removeChild(
             historyEl.lastChild
         );
+
     }
+
 }
 
-function resetGame(){
 
-    balance = 1000;
-    selected = null;
-    playing = false;
-    rotation = 0;
-
-    wheel.style.transform =
-        "rotate(0deg)";
-
-    resultEl.textContent =
-        "Выбери цвет";
-
-    historyEl.innerHTML = "";
-
-    updateBalance();
-}
+/* ================= ЗАПУСК ================= */
 
 updateBalance();
 
 </script>
 
 </body>
-</html>
+                </html>
